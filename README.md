@@ -135,3 +135,6 @@ spark.mongodb.database=test
 - If Binance blocks temporarily with rate limits, wait a few minutes and retry.
 - If Swagger does not open, confirm the app is running and check whether you used port `8080` or `8091`.
 - If Spark cannot connect to MongoDB, confirm MongoDB is running locally and the database name matches `spark.mongodb.database`.
+
+##Demo Video 
+https://github.com/nicolaecerga03-cpu/data-warehouse-project/releases/tag/v1.0
