@@ -17,6 +17,7 @@ No Nasdaq Data Link key is required. The LLM/MCP bonus part is intentionally not
 - Idempotent ETL that skips unchanged daily records
 - REST APIs with pagination, filtering, sorting, and Swagger UI
 - Apache Spark 4 analytics job that reads MongoDB, aggregates data, trains a simple linear regression model, and writes results back to MongoDB
+- Repository documentation with an architecture diagram and a demo-video artifact for offline evaluation
 
 ## Requirements
 
@@ -98,6 +99,14 @@ Invoke-RestMethod "http://localhost:8080/api/v1/data?assetId=AAPL&dataSourceId=Y
 - `GET /api/v1/analytics/compare`
 - `POST /api/v1/analytics/spark/run`
 
+## Architecture And Demo Artifacts
+
+- Architecture diagram: [docs/architecture.md](docs/architecture.md)
+- Demo video artifact: [docs/demo-video.mp4](docs/demo-video.mp4)
+- Demo video script: [docs/demo-video-script.md](docs/demo-video-script.md)
+
+The MP4 in `docs/demo-video.mp4` is a compact repository artifact under 3 minutes. For a live oral defense, use the script to record the same flow from your running application.
+
 ## Spark Analytics
 
 Run the Spark job after ingestion:
@@ -110,6 +119,7 @@ It writes:
 
 - Yearly aggregations to `spark_analytics_summaries`
 - Linear regression prediction results to `spark_prediction_results`
+- Training metrics `trainingRmse` and `trainingR2` with the Spark prediction result
 
 Spark uses these properties in `src/main/resources/application.properties`:
 
