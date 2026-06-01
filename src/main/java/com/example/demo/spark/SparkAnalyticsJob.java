@@ -18,7 +18,6 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 
-import org.apache.spark.ml.evaluation.RegressionEvaluator;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.ml.linalg.Vectors;
 import org.apache.spark.ml.regression.LinearRegression;
@@ -60,7 +59,7 @@ public class SparkAnalyticsJob {
             long inputRecords = latestPoints.count();
 
             long yearlySummariesWritten = writeYearlySummaries(latestPoints);
-            SparkPredictionWriteResult predictionResult = writeLinearRegressionPrediction(
+            long predictionsWritten = writeLinearRegressionPrediction(
                     spark, latestPoints, assetId, dataSourceId, startBusinessDate, endBusinessDate, inputRecords);
 
             return new SparkAnalyticsResult(
@@ -70,9 +69,7 @@ public class SparkAnalyticsJob {
                     endBusinessDate,
                     inputRecords,
                     yearlySummariesWritten,
-                    predictionResult.predictionsWritten(),
-                    predictionResult.trainingRmse(),
-                    predictionResult.trainingR2(),
+                    predictionsWritten,
                     SUMMARY_COLLECTION,
                     PREDICTION_COLLECTION);
         } finally {
@@ -149,7 +146,7 @@ public class SparkAnalyticsJob {
         return summaryCount;
     }
 
-    private SparkPredictionWriteResult writeLinearRegressionPrediction(
+    private long writeLinearRegressionPrediction(
             SparkSession spark,
             Dataset<Row> latestPoints,
             String assetId,
@@ -158,7 +155,7 @@ public class SparkAnalyticsJob {
             LocalDate endBusinessDate,
             long inputRecords) {
         if (inputRecords < 2) {
-            return new SparkPredictionWriteResult(0, null, null);
+            return 0;
         }
 
         WindowSpec orderByBusinessDate = Window.orderBy(col("businessDate").asc());
@@ -178,17 +175,6 @@ public class SparkAnalyticsJob {
                 .setLabelCol("label")
                 .fit(featureRows);
 
-        Dataset<Row> fittedRows = model.transform(featureRows).cache();
-        double trainingRmse = new RegressionEvaluator()
-                .setMetricName("rmse")
-                .setLabelCol("label")
-                .setPredictionCol("prediction")
-                .evaluate(fittedRows);
-        double trainingR2 = new RegressionEvaluator()
-                .setMetricName("r2")
-                .setLabelCol("label")
-                .setPredictionCol("prediction")
-                .evaluate(fittedRows);
         double predictedClose = model.predict(Vectors.dense((double) inputRecords));
         LocalDate latestBusinessDate = toLocalDate(latestPoints.agg(max(col("businessDate"))).first().get(0));
 
@@ -201,13 +187,11 @@ public class SparkAnalyticsJob {
         prediction.setTargetBusinessDate(nextBusinessDate(latestBusinessDate).toString());
         prediction.setPredictedClose(predictedClose);
         prediction.setTrainingRecordCount(inputRecords);
-        prediction.setTrainingRmse(trainingRmse);
-        prediction.setTrainingR2(trainingR2);
         prediction.setModelName("Apache Spark MLlib LinearRegression over latest Close values");
 
         Dataset<Row> predictionFrame = spark.createDataFrame(List.of(prediction), SparkPredictionDocument.class);
         writeMongo(predictionFrame, PREDICTION_COLLECTION);
-        return new SparkPredictionWriteResult(1, trainingRmse, trainingR2);
+        return 1;
     }
 
     private void writeMongo(Dataset<Row> frame, String collection) {
@@ -254,13 +238,8 @@ public class SparkAnalyticsJob {
             long latestInputRecords,
             long yearlySummariesWritten,
             long predictionsWritten,
-            Double trainingRmse,
-            Double trainingR2,
             String summaryCollection,
             String predictionCollection) {
-    }
-
-    private record SparkPredictionWriteResult(long predictionsWritten, Double trainingRmse, Double trainingR2) {
     }
 
     public static class SparkPredictionDocument {
@@ -273,8 +252,6 @@ public class SparkAnalyticsJob {
         private String targetBusinessDate;
         private Double predictedClose;
         private long trainingRecordCount;
-        private Double trainingRmse;
-        private Double trainingR2;
         private String modelName;
 
         public String getAssetId() {
@@ -339,22 +316,6 @@ public class SparkAnalyticsJob {
 
         public void setTrainingRecordCount(long trainingRecordCount) {
             this.trainingRecordCount = trainingRecordCount;
-        }
-
-        public Double getTrainingRmse() {
-            return trainingRmse;
-        }
-
-        public void setTrainingRmse(Double trainingRmse) {
-            this.trainingRmse = trainingRmse;
-        }
-
-        public Double getTrainingR2() {
-            return trainingR2;
-        }
-
-        public void setTrainingR2(Double trainingR2) {
-            this.trainingR2 = trainingR2;
         }
 
         public String getModelName() {

@@ -301,8 +301,6 @@ class DataWarehouseControllerTest {
                         252,
                         1,
                         1,
-                        2.41,
-                        0.93,
                         "spark_analytics_summaries",
                         "spark_prediction_results"));
 
@@ -315,8 +313,6 @@ class DataWarehouseControllerTest {
                 .andExpect(jsonPath("$.assetId").value("AAPL"))
                 .andExpect(jsonPath("$.latestInputRecords").value(252))
                 .andExpect(jsonPath("$.yearlySummariesWritten").value(1))
-                .andExpect(jsonPath("$.predictionsWritten").value(1))
-                .andExpect(jsonPath("$.trainingRmse").value(2.41))
-                .andExpect(jsonPath("$.trainingR2").value(0.93));
+                .andExpect(jsonPath("$.predictionsWritten").value(1));
     }
 }
