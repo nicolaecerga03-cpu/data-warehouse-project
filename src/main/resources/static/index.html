@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acme Financial Warehouse</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #17202a;
+      --muted: #637083;
+      --line: #d9dee7;
+      --green: #0f8f72;
+      --blue: #285fbd;
+      --amber: #a86c00;
+      --red: #b42318;
+      --soft-green: #e9f7f2;
+      --soft-blue: #edf3ff;
+      --soft-amber: #fff6df;
+      --shadow: 0 10px 30px rgba(31, 42, 55, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    header {
+      background: #10202f;
+      color: white;
+      border-bottom: 4px solid var(--green);
+    }
+
+    .topbar {
+      width: min(1320px, calc(100% - 32px));
+      min-height: 72px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: #bfd0e0;
+      margin-top: 4px;
+      font-size: 13px;
+    }
+
+    main {
+      width: min(1320px, calc(100% - 32px));
+      margin: 22px auto 48px;
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    section,
+    aside {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    aside {
+      align-self: start;
+      overflow: hidden;
+    }
+
+    .section-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .panel-body {
+      padding: 16px 18px 18px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: var(--text);
+      background: white;
+      font: inherit;
+    }
+
+    button {
+      min-height: 38px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--blue);
+      color: white;
+    }
+
+    button.secondary {
+      background: white;
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    button.green {
+      background: var(--green);
+    }
+
+    button.amber {
+      background: var(--amber);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .status {
+      color: var(--muted);
+      min-height: 20px;
+      font-size: 13px;
+    }
+
+    .status.error {
+      color: var(--red);
+    }
+
+    .message-bar {
+      width: min(1320px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 10px 0 14px;
+      color: #d7e8f5;
+      font-size: 13px;
+    }
+
+    .message-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+      border-radius: 999px;
+      padding: 5px 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .message-pill.error {
+      background: #fff0ed;
+      color: var(--red);
+      border-color: #ffd1ca;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      background: var(--soft-blue);
+      min-height: 82px;
+    }
+
+    .metric:nth-child(2) {
+      background: var(--soft-green);
+    }
+
+    .metric:nth-child(3) {
+      background: var(--soft-amber);
+    }
+
+    .metric-title {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      margin-top: 8px;
+      font-size: 22px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 740px;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #f0f3f7;
+      color: #344154;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tr.selected {
+      background: #eaf8f4;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      border-radius: 999px;
+      padding: 3px 9px;
+      background: #eef1f5;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    canvas {
+      width: 100%;
+      height: 260px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      display: block;
+    }
+
+    .analytics-output {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .result-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 96px;
+      background: #fbfcfe;
+    }
+
+    .result-box strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #293445;
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .grid,
+      .grid.two,
+      .metric-row,
+      .analytics-output {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div>
+        <h1>Acme Financial Warehouse</h1>
+        <div class="subtitle">MongoDB-backed assets, time series, ingestion, and analytics</div>
+      </div>
+      <div class="actions">
+        <button class="green" id="seedBtn">Seed demo data</button>
+        <button id="refreshBtn">Refresh</button>
+        <button class="secondary" id="swaggerBtn">Swagger</button>
+      </div>
+    </div>
+    <div class="message-bar">
+      <span class="message-pill" id="connectionStatus">Checking Spring API...</span>
+    </div>
+  </header>
+
+  <main>
+    <aside>
+      <div class="section-head">
+        <h2>Assets</h2>
+        <span class="tag" id="assetCount">0</span>
+      </div>
+      <div class="panel-body stack">
+        <label>
+          Search
+          <input id="assetSearch" type="search" placeholder="USDT, BTC, AAPL">
+        </label>
+        <div class="grid two">
+          <label>
+            Type
+            <select id="classFilter">
+              <option value="all">All</option>
+              <option value="Stock">Stock</option>
+              <option value="Crypto">Crypto</option>
+            </select>
+          </label>
+          <label>
+            Region
+            <select id="regionFilter">
+              <option value="all">All</option>
+              <option value="US">US</option>
+              <option value="Global">Global</option>
+            </select>
+          </label>
+        </div>
+        <div class="grid two">
+          <label>
+            Sort by
+            <select id="assetSort">
+              <option value="assetId">Asset ID</option>
+              <option value="name">Name</option>
+              <option value="assetClass">Type</option>
+              <option value="region">Region</option>
+            </select>
+          </label>
+          <label>
+            Direction
+            <select id="assetDirection">
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </label>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>Type</th>
+                <th>Region</th>
+              </tr>
+            </thead>
+            <tbody id="assetRows"></tbody>
+          </table>
+        </div>
+        <div class="status" id="assetStatus"></div>
+      </div>
+    </aside>
+
+    <div class="stack">
+      <section>
+        <div class="section-head">
+          <h2>Time Series Query</h2>
+          <div class="actions">
+            <button class="amber" id="ingestBtn">Ingest 3 assets</button>
+            <button class="secondary" id="latestRangeBtn">Use latest range</button>
+            <button id="queryBtn">Run query</button>
+          </div>
+        </div>
+        <div class="panel-body stack">
+          <div class="grid">
+            <label>
+              Asset ID
+              <input id="assetIdInput" value="USDT">
+            </label>
+            <label>
+              Data Source
+              <select id="sourceInput">
+                <option value="BINANCE">BINANCE</option>
+                <option value="YAHOO">YAHOO</option>
+              </select>
+            </label>
+            <label>
+              Start
+              <input id="startInput" type="date" value="2024-01-01">
+            </label>
+            <label>
+              End
+              <input id="endInput" type="date" value="2024-02-01">
+            </label>
+          </div>
+          <div class="grid">
+            <label>
+              Indicator
+              <select id="indicatorFilter">
+                <option value="all">All</option>
+                <option value="Open">Open</option>
+                <option value="High">High</option>
+                <option value="Low">Low</option>
+                <option value="Close">Close</option>
+                <option value="Volume">Volume</option>
+                <option value="MarketCap">MarketCap</option>
+                <option value="Bid">Bid</option>
+                <option value="Ask">Ask</option>
+              </select>
+            </label>
+            <label>
+              Date sort
+              <select id="dateSort">
+                <option value="desc">Newest first</option>
+                <option value="asc">Oldest first</option>
+              </select>
+            </label>
+            <label>
+              Compare with
+              <input id="compareInput" value="BTC">
+            </label>
+            <label>
+              Source for compare
+              <select id="compareSourceInput">
+                <option value="BINANCE">BINANCE</option>
+                <option value="YAHOO">YAHOO</option>
+              </select>
+            </label>
+          </div>
+          <canvas id="chart" width="980" height="260"></canvas>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Open</th>
+                  <th>High</th>
+                  <th>Low</th>
+                  <th>Close</th>
+                  <th>Volume</th>
+                  <th>Extra</th>
+                </tr>
+              </thead>
+              <tbody id="dataRows"></tbody>
+            </table>
+          </div>
+          <div class="status" id="queryStatus"></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2>Analytics</h2>
+          <div class="actions">
+            <button id="summaryBtn">Yearly summary</button>
+            <button id="predictBtn">Forecast</button>
+            <button id="riskBtn">Risk</button>
+            <button class="secondary" id="compareBtn">Compare</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="metric-row">
+            <div class="metric">
+              <div class="metric-title">Selected asset</div>
+              <div class="metric-value" id="metricAsset">USDT</div>
+            </div>
+            <div class="metric">
+              <div class="metric-title">Records</div>
+              <div class="metric-value" id="metricRecords">0</div>
+            </div>
+            <div class="metric">
+              <div class="metric-title">Latest close</div>
+              <div class="metric-value" id="metricClose">-</div>
+            </div>
+            <div class="metric">
+              <div class="metric-title">Range change</div>
+              <div class="metric-value" id="metricChange">-</div>
+            </div>
+          </div>
+          <div class="analytics-output">
+            <div class="result-box">
+              <strong>Summary</strong>
+              <pre id="summaryOut">No result yet.</pre>
+            </div>
+            <div class="result-box">
+              <strong>Forecast</strong>
+              <pre id="predictOut">No result yet.</pre>
+            </div>
+            <div class="result-box">
+              <strong>Risk or comparison</strong>
+              <pre id="riskOut">No result yet.</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const api = "/api/v1";
+    let assets = [];
+    let records = [];
+    let selectedAsset = "USDT";
+
+    const $ = (id) => document.getElementById(id);
+
+    function setStatus(id, message, isError) {
+      const element = $(id);
+      element.textContent = message || "";
+      element.classList.toggle("error", Boolean(isError));
+    }
+
+    function setConnection(message, isError) {
+      const element = $("connectionStatus");
+      element.textContent = message;
+      element.classList.toggle("error", Boolean(isError));
+    }
+
+    function setBusy(buttonId, busy) {
+      const button = $(buttonId);
+      if (!button) return;
+      button.disabled = busy;
+    }
+
+    async function request(path, options = {}) {
+      if (window.location.protocol === "file:") {
+        throw new Error("Open this dashboard through Spring: http://localhost:8080/ . Do not open index.html directly.");
+      }
+      const response = await fetch(api + path, options);
+      const text = await response.text();
+      let body = null;
+      if (text) {
+        try {
+          body = JSON.parse(text);
+        } catch (parseError) {
+          if (!response.ok) {
+            throw new Error(response.status + " " + response.statusText + (text ? ": " + text.slice(0, 200) : ""));
+          }
+          throw new Error("Invalid JSON from API: " + text.slice(0, 200));
+        }
+      }
+      if (!response.ok) {
+        const msg = body && (body.error || body.message) ? (body.error || body.message) : response.statusText;
+        throw new Error(typeof msg === "string" ? msg : response.statusText);
+      }
+      setConnection("Spring API connected", false);
+      return body;
+    }
+
+    function selectedQuery() {
+      return {
+        assetId: $("assetIdInput").value.trim(),
+        dataSourceId: $("sourceInput").value
+      };
+    }
+
+    async function useLatestRange() {
+      const query = selectedQuery();
+      if (!query.assetId || !query.dataSourceId) {
+        throw new Error("Choose an asset and data source first.");
+      }
+      setBusy("latestRangeBtn", true);
+      try {
+        setStatus("queryStatus", `Finding latest stored range for ${query.assetId}/${query.dataSourceId}...`);
+        const range = await request("/data/range?" + new URLSearchParams(query));
+        if (!range.latestBusinessDate || !range.endExclusiveBusinessDate) {
+          throw new Error(`No records are stored for ${query.assetId}/${query.dataSourceId}. Seed demo data or ingest first.`);
+        }
+        $("startInput").value = range.suggestedStartBusinessDate || range.earliestBusinessDate;
+        $("endInput").value = range.endExclusiveBusinessDate;
+        const sourceNote = range.demoFallback ? "demo" : "provider";
+        setStatus("queryStatus",
+          `Using latest ${sourceNote} range ending ${range.latestBusinessDate} (${range.recordCount} stored versions).`);
+        return range;
+      } finally {
+        setBusy("latestRangeBtn", false);
+      }
+    }
+
+    async function checkApiConnection() {
+      try {
+        await request("/assets?limit=1");
+      } catch (error) {
+        setConnection(error.message, true);
+        throw error;
+      }
+    }
+
+    async function loadAssets() {
+      setStatus("assetStatus", "Loading assets...");
+      const params = new URLSearchParams({
+        offset: "0",
+        limit: "100",
+        sortBy: $("assetSort").value,
+        direction: $("assetDirection").value
+      });
+      const cls = $("classFilter").value;
+      const region = $("regionFilter").value;
+      if (cls !== "all") params.set("assetClass", cls);
+      if (region !== "all") params.set("region", region);
+      assets = await request("/assets/catalog?" + params);
+      renderAssets();
+      setStatus("assetStatus", "Ready");
+    }
+
+    function renderAssets() {
+      const search = $("assetSearch").value.trim().toLowerCase();
+      const rows = assets.filter((asset) => {
+        const haystack = [asset.assetId, asset.name, asset.assetClass, asset.region]
+          .join(" ")
+          .toLowerCase();
+        return !search || haystack.includes(search);
+      });
+      $("assetCount").textContent = rows.length;
+      $("assetRows").innerHTML = rows.map((asset) => `
+        <tr class="${asset.assetId === selectedAsset ? "selected" : ""}" data-id="${asset.assetId}">
+          <td><strong>${escapeHtml(asset.assetId)}</strong><br>${escapeHtml(asset.name || "")}</td>
+          <td><span class="tag">${escapeHtml(asset.assetClass || "Unknown")}</span></td>
+          <td>${escapeHtml(asset.region || "")}</td>
+        </tr>`).join("");
+      document.querySelectorAll("#assetRows tr").forEach((row) => {
+        row.addEventListener("click", () => selectAsset(row.dataset.id));
+      });
+    }
+
+    function selectAsset(assetId) {
+      selectedAsset = assetId;
+      $("assetIdInput").value = assetId;
+      const asset = assets.find((item) => item.assetId === assetId);
+      if (assetId === "USDT" || assetId === "BTC") $("sourceInput").value = "BINANCE";
+      if (assetId === "AAPL") $("sourceInput").value = "YAHOO";
+      $("metricAsset").textContent = assetId;
+      renderAssets();
+      useLatestRange().then(queryData).catch((error) => setStatus("queryStatus", error.message, true));
+    }
+
+    async function seedDemoData() {
+      setBusy("seedBtn", true);
+      setStatus("assetStatus", "Preparing demo data...");
+      try {
+        const result = await request("/demo-data", { method: "POST" });
+        setStatus("assetStatus", result.message + ` (${result.insertedPoints} points added)`);
+        await loadAssets();
+        await useLatestRange();
+        await queryData();
+      } finally {
+        setBusy("seedBtn", false);
+      }
+    }
+
+    async function ingestStock() {
+      setBusy("ingestBtn", true);
+      setStatus("queryStatus", "Ingesting USDT, BTC, and AAPL...");
+      try {
+        const result = await request("/ingest", { method: "POST" });
+        const range = result.assets && result.assets.length
+          ? ` (${result.totalInsertedRecords} inserted, ${result.totalSkippedRecords} skipped)`
+          : "";
+        setStatus(
+          "queryStatus",
+          `${result.message}${range}`
+        );
+        await loadAssets();
+        await useLatestRange();
+        await queryData();
+      } finally {
+        setBusy("ingestBtn", false);
+      }
+    }
+
+    async function queryData() {
+      const params = new URLSearchParams({
+        assetId: selectedQuery().assetId,
+        dataSourceId: selectedQuery().dataSourceId,
+        startBusinessDate: $("startInput").value,
+        endBusinessDate: $("endInput").value,
+        includeAttributes: "true"
+      });
+      setStatus("queryStatus", "Loading time series...");
+      records = await request("/data?" + params);
+      renderData();
+      if (records.length === 0) {
+        setStatus("queryStatus", "0 records loaded. Click Use latest range, Seed demo data, or Ingest 3 assets.", true);
+      } else {
+        setStatus("queryStatus", `${records.length} records loaded`);
+      }
+    }
+
+    function renderData() {
+      const indicator = $("indicatorFilter").value;
+      const sorted = [...records].sort((a, b) => {
+        const direction = $("dateSort").value === "asc" ? 1 : -1;
+        return direction * String(a.businessDate).localeCompare(String(b.businessDate));
+      });
+      const filtered = sorted.filter((record) => {
+        return indicator === "all" || record.values && Object.hasOwn(record.values, indicator);
+      });
+      $("dataRows").innerHTML = filtered.map((record) => {
+        const values = record.values || {};
+        const extras = Object.keys(values)
+          .filter((key) => !["Open", "High", "Low", "Close", "Volume"].includes(key))
+          .map((key) => `${key}: ${format(values[key])}`)
+          .join(", ");
+        return `<tr>
+          <td>${escapeHtml(record.businessDate)}</td>
+          <td>${format(values.Open)}</td>
+          <td>${format(values.High)}</td>
+          <td>${format(values.Low)}</td>
+          <td>${format(values.Close)}</td>
+          <td>${format(values.Volume)}</td>
+          <td>${escapeHtml(extras)}</td>
+        </tr>`;
+      }).join("");
+      updateMetrics(filtered);
+      drawChart(filtered);
+    }
+
+    function updateMetrics(rows) {
+      $("metricAsset").textContent = $("assetIdInput").value.trim() || "-";
+      $("metricRecords").textContent = rows.length;
+      const chronological = [...rows].sort((a, b) => String(a.businessDate).localeCompare(String(b.businessDate)));
+      const first = chronological.find((record) => record.values && record.values.Close != null);
+      const last = [...chronological].reverse().find((record) => record.values && record.values.Close != null);
+      $("metricClose").textContent = last ? format(last.values.Close) : "-";
+      if (first && last && Number(first.values.Close) !== 0) {
+        const change = ((Number(last.values.Close) - Number(first.values.Close)) / Number(first.values.Close)) * 100;
+        $("metricChange").textContent = change.toFixed(2) + "%";
+      } else {
+        $("metricChange").textContent = "-";
+      }
+    }
+
+    function drawChart(rows) {
+      const canvas = $("chart");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const points = [...rows]
+        .filter((record) => record.values && record.values.Close != null)
+        .sort((a, b) => String(a.businessDate).localeCompare(String(b.businessDate)))
+        .map((record) => ({ date: record.businessDate, value: Number(record.values.Close) }));
+      if (points.length < 2) {
+        ctx.fillStyle = "#637083";
+        ctx.font = "14px Arial";
+        ctx.fillText("Run a query with at least two Close values.", 24, 40);
+        return;
+      }
+      const padding = 38;
+      const min = Math.min(...points.map((p) => p.value));
+      const max = Math.max(...points.map((p) => p.value));
+      const range = max - min || 1;
+      ctx.strokeStyle = "#d9dee7";
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 4; i++) {
+        const y = padding + i * ((canvas.height - padding * 2) / 3);
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(canvas.width - padding, y);
+        ctx.stroke();
+      }
+      ctx.strokeStyle = "#0f8f72";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      points.forEach((point, index) => {
+        const x = padding + index * ((canvas.width - padding * 2) / (points.length - 1));
+        const y = canvas.height - padding - ((point.value - min) / range) * (canvas.height - padding * 2);
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.fillStyle = "#285fbd";
+      points.forEach((point, index) => {
+        const x = padding + index * ((canvas.width - padding * 2) / (points.length - 1));
+        const y = canvas.height - padding - ((point.value - min) / range) * (canvas.height - padding * 2);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.fillStyle = "#344154";
+      ctx.font = "12px Arial";
+      ctx.fillText("Close " + format(min), padding, canvas.height - 12);
+      ctx.fillText(format(max), padding, 18);
+    }
+
+    async function yearlySummary() {
+      $("summaryOut").textContent = "Running yearly summary...";
+      const result = await analyticsRequest("/analytics/yearly-summary", "POST");
+      $("summaryOut").textContent = JSON.stringify(result, null, 2);
+    }
+
+    async function forecast() {
+      $("predictOut").textContent = "Running forecast...";
+      const result = await analyticsRequest("/analytics/predict-next-close", "POST");
+      $("predictOut").textContent = JSON.stringify(result, null, 2);
+    }
+
+    async function risk() {
+      $("riskOut").textContent = "Calculating risk...";
+      const result = await analyticsRequest("/analytics/risk-signal", "GET");
+      $("riskOut").textContent = JSON.stringify(result, null, 2);
+    }
+
+    async function compare() {
+      const params = new URLSearchParams({
+        firstAssetId: $("assetIdInput").value.trim(),
+        secondAssetId: $("compareInput").value.trim(),
+        firstDataSourceId: $("sourceInput").value,
+        secondDataSourceId: $("compareSourceInput").value,
+        startBusinessDate: $("startInput").value,
+        endBusinessDate: $("endInput").value
+      });
+      const result = await request("/analytics/compare?" + params);
+      $("riskOut").textContent = JSON.stringify(result, null, 2);
+    }
+
+    async function analyticsRequest(path, method) {
+      const params = new URLSearchParams({
+        assetId: $("assetIdInput").value.trim(),
+        dataSourceId: $("sourceInput").value,
+        startBusinessDate: $("startInput").value,
+        endBusinessDate: $("endInput").value
+      });
+      return request(path + "?" + params, { method });
+    }
+
+    function format(value) {
+      if (value == null || value === "") return "-";
+      const number = Number(value);
+      if (Number.isFinite(number)) {
+        if (Math.abs(number) >= 1000000) return number.toLocaleString(undefined, { maximumFractionDigits: 0 });
+        if (Math.abs(number) >= 100) return number.toLocaleString(undefined, { maximumFractionDigits: 2 });
+        return number.toLocaleString(undefined, { maximumFractionDigits: 5 });
+      }
+      return String(value);
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? "" : value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function bind(id, event, handler) {
+      $(id).addEventListener(event, async () => {
+        try {
+          await handler();
+        } catch (error) {
+          setStatus(id.includes("asset") || id === "seedBtn" || id === "refreshBtn" ? "assetStatus" : "queryStatus",
+            error.message, true);
+          if (id === "summaryBtn") $("summaryOut").textContent = error.message;
+          if (id === "predictBtn") $("predictOut").textContent = error.message;
+          if (id === "riskBtn" || id === "compareBtn") $("riskOut").textContent = error.message;
+        }
+      });
+    }
+
+    bind("seedBtn", "click", seedDemoData);
+    bind("refreshBtn", "click", loadAssets);
+    bind("ingestBtn", "click", ingestStock);
+    bind("latestRangeBtn", "click", async () => {
+      await useLatestRange();
+      await queryData();
+    });
+    bind("queryBtn", "click", queryData);
+    bind("summaryBtn", "click", yearlySummary);
+    bind("predictBtn", "click", forecast);
+    bind("riskBtn", "click", risk);
+    bind("compareBtn", "click", compare);
+    $("swaggerBtn").addEventListener("click", () => window.open("/swagger-ui.html", "_blank"));
+    ["assetSearch", "indicatorFilter", "dateSort"].forEach((id) => $(id).addEventListener("input", () => {
+      if (id === "assetSearch") renderAssets();
+      else renderData();
+    }));
+    ["classFilter", "regionFilter", "assetSort", "assetDirection"].forEach((id) => {
+      $(id).addEventListener("change", () => loadAssets().catch((error) => setStatus("assetStatus", error.message, true)));
+    });
+
+    checkApiConnection()
+      .then(loadAssets)
+      .then(useLatestRange)
+      .then(queryData)
+      .catch((error) => {
+        setStatus("assetStatus", error.message, true);
+        setStatus("queryStatus", "Start the Spring Boot app and reload this page.", true);
+      });
+  </script>
+</body>
+</html>
